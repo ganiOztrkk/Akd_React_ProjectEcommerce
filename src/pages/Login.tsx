@@ -1,15 +1,34 @@
 import React, {useState, FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function Login() {
 
+  const navigate = useNavigate()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState("")
+  const [errorMessage, setErrorMessage] = useState('')
 
 //fnc Login
 const fcnLogin = (evt: FormEvent) => {
   evt.preventDefault()
-  console.log(email, password, "deneme")
-  
+  if(email === "gani@gmail.com" && password ==="12345"){
+    //geçici yani tarayıcı acık oldugu sürece yaşayan data - session storage
+    //birinci parametre - key , ikinci parametre - value
+    const item ={
+      email: email,
+      name: "Ali Bilmem",
+      phone: "543 230 2300"
+    }
+    const stItem = JSON.stringify(item)
+    localStorage.setItem("user", stItem)
+    navigate('/dashboard')
+    //sessionStorage.setItem("user",email)
+  }
+  else{
+    setErrorMessage("Kullanıcı adı yada şifre hatalı.")
+  }
+
 }
 
   return (
@@ -19,6 +38,12 @@ const fcnLogin = (evt: FormEvent) => {
         <div className='col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4'>
           <form onSubmit={fcnLogin}>
             <h2>Admin Login</h2>
+            {errorMessage !== "" &&
+            <div className="alert alert-warning alert-dismissible fade show" role="alert">
+              <strong>Dikkat!</strong> {errorMessage}
+              <button type="button" className="btn-close" onClick={() => setErrorMessage('')}></button>
+            </div>
+            }
             <div  className='mb-3 mt-3'>
               <input onChange={(evt) => setEmail(evt.target.value)} type='email' className='form-control' placeholder='E-Mail'/>
             </div>
