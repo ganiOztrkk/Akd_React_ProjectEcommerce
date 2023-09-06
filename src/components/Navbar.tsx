@@ -1,21 +1,37 @@
 import React, { useEffect, useState } from 'react'
 import { IUser } from '../models/IUser'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { decrypt } from '../util'
 
 function Navbar() {
 
   const [item, setItem] = useState<IUser>()
     const navigate = useNavigate()
     useEffect( () => {
-    const stData = localStorage.getItem("user")
+    var stData = localStorage.getItem("user")
         if(stData !== null){
+          try {
+            stData = decrypt(stData)
             const jsonObj = JSON.parse(stData) as IUser
             setItem(jsonObj)
+          } catch (error) {
+            localStorage.removeItem("user")
+            navigate('/')
+          }
+            
         }
         else{
           navigate('/')
         }
     }, [])
+
+const logOut= () =>{
+  const answer = window.confirm("Çıkmak istediğinizden emin misiniz?")
+  if(answer === true){
+    localStorage.removeItem("user")
+    navigate('/')
+  }
+}
 
   return (
     <>
@@ -42,7 +58,8 @@ function Navbar() {
       </ul>
       <form className="d-flex" role="search">
         <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button className="btn btn-outline-success" type="submit">Search</button>
+        <button className="btn btn-outline-success me-2" type="submit">Search</button>
+        <button onClick={logOut} className="btn btn-outline-danger" type="submit">Logout</button>
       </form>
     </div>
   </div>
